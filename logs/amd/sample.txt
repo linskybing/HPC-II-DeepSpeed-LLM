@@ -1,0 +1,13 @@
+.....
+
+[Step 98/100] Loss: 5.2718 | Global Tokens/s: 1151.49 | GPU Mem (GB): 8.97 | Peak Mem: 9.48
+[2025-10-28 15:02:02,757] [INFO] [logging.py:107:log_dist] [Rank 0] step=99, skipped=0, lr=[2e-05], mom=[(0.9, 0.999)]
+[2025-10-28 15:02:02,767] [INFO] [timer.py:264:stop] epoch=0/micro_step=99/global_step=99, RunningAvgSamplesPerSec=3.2793316435005395, CurrSamplesPerSec=3.293673393194465, MemAllocated=8.99GB, MaxMemAllocated=9.48GB
+[Step 99/100] Loss: 5.2200 | Global Tokens/s: 1151.62 | GPU Mem (GB): 8.97 | Peak Mem: 9.48
+[2025-10-28 15:02:03,374] [INFO] [logging.py:107:log_dist] [Rank 0] step=100, skipped=0, lr=[2e-05], mom=[(0.9, 0.999)]
+[2025-10-28 15:02:03,384] [INFO] [timer.py:264:stop] epoch=0/micro_step=100/global_step=100, RunningAvgSamplesPerSec=3.2791361361568225, CurrSamplesPerSec=3.260276771749416, MemAllocated=8.99GB, MaxMemAllocated=9.48GB
+[Step 100/100] Loss: 5.2315 | Global Tokens/s: 1139.96 | GPU Mem (GB): 8.97 | Peak Mem: 9.48
+
+Training done in 62.56 seconds.
+Avg Global Tokens/s: 1123.54
+Peak GPU Mem (GB): 9.48

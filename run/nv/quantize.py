@@ -13,6 +13,10 @@ from nltk.corpus import words
 import os
 word_list = words.words()
 
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from utils import BenchmarkTimer
+
 # -----------------------------
 # Random text generation utils
 # -----------------------------
@@ -120,44 +124,29 @@ def main():
     # -----------------------------
     # Training loop
     # -----------------------------
-    start_time = time.time()
-    total_tokens = 0.0
-    total_steps_time = 0.0
+    timer = BenchmarkTimer(warm_up_steps=30, total_steps=args.total_steps)
 
-    for step in range(args.total_steps):
+    for step in range(args.total_steps + 30):
         inputs = generate_batch(tokenizer, args.batch_size, args.seq_len, ds_engine.device)
         labels = inputs.clone()
 
-        torch.cuda.synchronize()
-        step_start = time.time()
+        ts = timer.step_start()
 
         loss_val = train_step(ds_engine, inputs, labels)
-
-        torch.cuda.synchronize()
-        step_time = time.time() - step_start
 
         local_tokens = torch.tensor([args.batch_size * args.seq_len], device=ds_engine.device)
         if dist.is_initialized() and world_size > 1:
             dist.all_reduce(local_tokens, op=dist.ReduceOp.SUM)
-        tokens_this_step = local_tokens.item()
 
-        tokens_per_sec = tokens_this_step / step_time
-        total_tokens += tokens_this_step
-        total_steps_time += step_time
+        step_time, status = timer.step_end(ts, step, local_tokens.item())
 
         if rank == 0:
-            mem_gb = torch.cuda.memory_allocated() / 1024**3
-            max_mem_gb = torch.cuda.max_memory_allocated() / 1024**3
-            print(f"[Step {step+1}/{args.total_steps}] Loss: {loss_val:.4f} | "
-                  f"Global Tokens/s: {tokens_per_sec:.2f} | GPU Mem (GB): {mem_gb:.2f} | Peak Mem: {max_mem_gb:.2f}")
+            tps = local_tokens.item() / step_time
+            print(f"[{status}] Step {step+1}: Loss {loss_val:.4f} | {tps:.2f} tokens/s")
 
     if rank == 0:
-        avg_tokens_per_sec = total_tokens / total_steps_time
-        total_time = time.time() - start_time
-        print(f"\nTraining done in {total_time:.2f} seconds.")
-        print(f"Avg Global Tokens/s: {avg_tokens_per_sec:.2f}")
-        print(f"Peak GPU Mem (GB): {torch.cuda.max_memory_allocated() / 1024**3 :.2f}")
-    
+        timer.print_final_stats(rank)
+        
     if dist.is_initialized():
         dist.destroy_process_group()
 

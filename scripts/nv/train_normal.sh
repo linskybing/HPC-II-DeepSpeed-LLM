@@ -1,12 +1,12 @@
 #! /bin/bash
 #SBATCH -A ACD110018
-#SBATCH -p gp1d
+#SBATCH -p gtest
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=8
 #SBATCH --cpus-per-task=1
 #SBATCH --gres=gpu:8
 #SBATCH -J train
-#SBATCH -o /work/u8644434/LLM/logs/nv/zero_3.out
+#SBATCH -o /work/u8644434/HPC-II-DeepSpeed-LLM/logs/nv/zero_3.out # [TODO]
 
 module purge
 module load miniconda3/conda24.5.0_py3.9 cmake
@@ -20,7 +20,7 @@ export PYTORCH_ALLOC_CONF="max_split_size_mb:128,garbage_collection_threshold:0.
 # nvidia-smi
 # python -c "import torch; print(torch.cuda.is_available(), torch.cuda.device_count())"
 
-export ROOT="/work/u8644434/LLM" # [TODO] Please change this line to your directory path.
+export ROOT="/work/u8644434/HPC-II-DeepSpeed-LLM" # [TODO] Please change this line to your directory path.
 export LOGS=$ROOT/logs
 export CONFIG=$ROOT/configs
 export RUN=$ROOT/run

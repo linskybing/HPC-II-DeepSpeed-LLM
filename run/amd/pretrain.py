@@ -84,7 +84,6 @@ def main():
     model = AutoModelForCausalLM.from_pretrained(
         args.model_name,
         device_map={"": device},
-        attn_implementation="flash_attention_2",
         torch_dtype=torch.float16,
         use_cache = False
     )
@@ -127,7 +126,7 @@ def main():
             print(f"[{status}] Step {step+1}: Loss {loss_val:.4f} | {tps:.2f} tokens/s")
 
     if ds_engine.local_rank == 0:
-        timer.print_final_stats(rank)
+        timer.print_final_stats(0)
     
     if dist.is_initialized():
         dist.destroy_process_group()

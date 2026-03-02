@@ -122,14 +122,14 @@ def main():
         if dist.is_initialized() and ds_engine.world_size > 1:
             dist.all_reduce(local_tokens, op=dist.ReduceOp.SUM)
        
-       step_time, status = timer.step_end(ts, step, local_tokens.item())
+        step_time, status = timer.step_end(ts, step, local_tokens.item())
 
         if ds_engine.local_rank == 0:
             tps = local_tokens.item() / step_time
             print(f"[{status}] Step {step+1}: Loss {loss_val:.4f} | {tps:.2f} tokens/s")
 
     if ds_engine.local_rank == 0:
-        timer.print_final_stats(rank)
+        timer.print_final_stats(0)
     
     if dist.is_initialized():
         dist.destroy_process_group()
